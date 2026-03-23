@@ -15,22 +15,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       
-      - name: Deploy via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./
-          server-dir: /public_html/undangan-wahab/
-          dangerous-clean-slate: false
-          exclude: |
-            **/.git*
-            **/.github
-            **/node_modules
-            **/.env
-            **/.DS_Store
+      - name: Deploy via SFTP
+        uses: easingthemes/ssh-deploy@main
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          REMOTE_HOST: ${{ secrets.FTP_SERVER }}
+          REMOTE_USER: ${{ secrets.FTP_USERNAME }}
+          REMOTE_PATH: /public_html/undangan-wahab/
+          ARGS: "-rltgoDzvO --exclude='.git*' --exclude='.github' --exclude='node_modules' --exclude='.env' --exclude='.DS_Store'"
 
       - name: Deployment Status
         if: always()
-        run: echo "✅ Deploy ke FTP berhasil!"
+        run: echo "✅ Deploy ke SFTP berhasil!"
